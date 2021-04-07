@@ -32,7 +32,6 @@ func generateXLSXFromCSVs(inputFiles []string, XLSXPath string, delimiter string
 
 	// Loop through all our input files and create our sheets
 	for _, file := range inputFiles {
-		fmt.Printf("file: %s\n", file)
 		csvFile, err := os.Open(file)
 		if err != nil {
 			return fmt.Errorf("unable to open file (%s): %v", file, err)
@@ -40,7 +39,7 @@ func generateXLSXFromCSVs(inputFiles []string, XLSXPath string, delimiter string
 		defer csvFile.Close()
 		reader := csv.NewReader(csvFile)
 		reader.Comma = rune(delimiter[0])
-		sheetName := strings.Replace(file, ".csv", "", -1)
+		sheetName := getSheetName(file)
 		sheet, err := xlsxFile.AddSheet(sheetName)
 		if err != nil {
 			return fmt.Errorf("unable to add sheet for file (%s): %v", file, err)
@@ -60,6 +59,15 @@ func generateXLSXFromCSVs(inputFiles []string, XLSXPath string, delimiter string
 	}
 
 	return xlsxFile.Save(XLSXPath)
+}
+
+// getSheetName removes the path and file extension from the input csv
+func getSheetName(fileName string) string {
+	// Remove .csv extension
+	sheetName := strings.Replace(fileName, ".csv", "", -1)
+	// Strip path
+	parts := strings.Split(sheetName, "/")
+	return parts[len(parts)-1]
 }
 
 func main() {
