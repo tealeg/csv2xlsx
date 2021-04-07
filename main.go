@@ -2,66 +2,78 @@ package main
 
 import (
 	"encoding/csv"
-	"flag"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/tealeg/xlsx"
 )
 
-var xlsxPath = flag.String("o", "", "Path to the XLSX output file")
-var csvPath = flag.String("f", "", "Path to the CSV input file")
-var delimiter = flag.String("d", ";", "Delimiter for felds in the CSV input.")
-
-func usage() {
-	fmt.Printf(`%s: -f=<CSV Input File> -o=<XLSX Output File> -d=<Delimiter>
-
-`,
-		os.Args[0])
+type Options struct {
+	InputFiles []string `short:"i" description:"Path to CSV input file(s). Multiple allowed with multiple -i flags"`
+	OutputFile string   `short:"o" description:"Path to the XLSX output file"`
+	Delimiter  string   `short:"d" default:"," description:"Delimiter used in the CSV file(s)"`
 }
 
-func generateXLSXFromCSV(csvPath string, XLSXPath string, delimiter string) error {
-	csvFile, err := os.Open(csvPath)
-	if err != nil {
-		return err
-	}
-	defer csvFile.Close()
-	reader := csv.NewReader(csvFile)
-	if len(delimiter) > 0 {
-		reader.Comma = rune(delimiter[0])
-	} else {
-		reader.Comma = rune(';')
-	}
+// usage prints usage of the command
+func usage() {
+	fmt.Println("csv2xlsx [OPTION]...")
+	fmt.Println("Options:")
+	fmt.Println("   -i    Path to CSV input file(s). Multiple allowed with multiple -i flags")
+	fmt.Println("   -o    Path to XSLX output file.")
+	fmt.Println("   -d    Delimiter in the CSV file(s). Default: ,")
+}
+
+// generateXLSXFromCSVs takes a set of input CSVs and generates a XLSX file with
+// each sheet named after the input CSV files
+func generateXLSXFromCSVs(inputFiles []string, XLSXPath string, delimiter string) error {
 	xlsxFile := xlsx.NewFile()
-	sheet, err := xlsxFile.AddSheet(csvPath)
-	if err != nil {
-		return err
-	}
-	fields, err := reader.Read()
-	for err == nil {
-		row := sheet.AddRow()
-		for _, field := range fields {
-			cell := row.AddCell()
-			cell.Value = field
+
+	// Loop through all our input files and create our sheets
+	for _, file := range inputFiles {
+		fmt.Printf("file: %s\n", file)
+		csvFile, err := os.Open(file)
+		if err != nil {
+			return fmt.Errorf("unable to open file (%s): %v", file, err)
 		}
-		fields, err = reader.Read()
+		defer csvFile.Close()
+		reader := csv.NewReader(csvFile)
+		reader.Comma = rune(delimiter[0])
+		sheetName := strings.Replace(file, ".csv", "", -1)
+		sheet, err := xlsxFile.AddSheet(sheetName)
+		if err != nil {
+			return fmt.Errorf("unable to add sheet for file (%s): %v", file, err)
+		}
+		fields, err := reader.Read()
+		for err == nil {
+			row := sheet.AddRow()
+			for _, field := range fields {
+				cell := row.AddCell()
+				cell.Value = field
+			}
+			fields, err = reader.Read()
+		}
+		if err != nil && err.Error() != "EOF" {
+			return err
+		}
 	}
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
+
 	return xlsxFile.Save(XLSXPath)
 }
 
 func main() {
-	flag.Parse()
-	if len(os.Args) < 3 {
+	var opts Options
+	_, err := flags.Parse(&opts)
+	if err != nil {
+		fmt.Printf("flags error: %v", err)
 		usage()
 		return
 	}
-	flag.Parse()
-	err := generateXLSXFromCSV(*csvPath, *xlsxPath, *delimiter)
+
+	err = generateXLSXFromCSVs(opts.InputFiles, opts.OutputFile, opts.Delimiter)
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Printf("Error generating XLSX file: %v", err.Error())
 		return
 	}
 }
