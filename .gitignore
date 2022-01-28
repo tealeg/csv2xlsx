@@ -1,4 +1,4 @@
-test.xlsx
+*.xlsx
 *.iml
 .idea
 .DS_Store
