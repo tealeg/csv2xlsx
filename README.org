@@ -12,32 +12,32 @@ In order to build and install this program you'll need the go toolchain.  You ca
 
 Once you have Go installed, you'll need to either clone this repository:
 
-```sh
+#+BEGIN_SRC sh
 git clone git@github.com:tealeg/csv2xlsx.git 
-```
+#+END_SRC
 ... or download and extract a Zipped snapshot from the green "Code" button above.
 
 From within the resulting `csv2xlsx` directory issue the following command to build the project:
 
-```sh
+#+BEGIN_SRC sh
 go build -v .
-```
+#+END_SRC
 
-If all goes well you shuould find the compiled binary `csv2xlsx` has been created.
+If all goes well you shuould find the compiled binary =csv2xlsx= has been created.
 
 ** Invocation
 
-To run `csv2xlsx` you must provide it with at least two parameters: an input file *<f>* and an output file *<o>*.  For example:
+To run =csv2xlsx= you must provide it with at least two parameters: an input file /<f>/ and an output file /<o>/.  For example:
 
-```sh
+#+BEGIN_SRC sh
 ./csv2xlsx -f=MyData.csv -o=MyData.xslx
-```
+#+END_SRC
 
-If your input file uses a delimiter other than a comma (`,`) then you must provide that as a third paramater, thus:
+If your input file uses a delimiter other than a comma (=,=) then you must provide that as a third paramater, thus:
 
-```sh
+#+BEGIN_SRC sh
 ./csv2xlsx -f=MyData.csv -o=MyData.xslx -d=";"
-```
+#+END_SRC
 
 
 ** Alternatives
