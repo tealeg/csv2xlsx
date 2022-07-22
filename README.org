@@ -33,7 +33,7 @@ To run =csv2xlsx= you must provide it with at least two parameters: an input fil
 ./csv2xlsx -f=MyData.csv -o=MyData.xslx
 #+END_SRC
 
-If your input file uses a delimiter other than a comma (=,=) then you must provide that as a third paramater, thus:
+If your input file uses a delimiter other than a comma then you must provide that as a third paramater, thus:
 
 #+BEGIN_SRC sh
 ./csv2xlsx -f=MyData.csv -o=MyData.xslx -d=";"
