@@ -2,7 +2,43 @@
 ** Introduction
 Because [[https://github.com/tealeg/xlsx2csv][the XLSX2CSV program]] exists, it seemed that it was natural to
 create a csv2xlsx corollary when the underlying xlsx library grew the
-ability to write XLSX files.
+ability to write XLSX files.  
+
+*Warning, this is old and largely unmaintained.*
+
+** Installation
+
+In order to build and install this program you'll need the go toolchain.  You can find this in the package management system of pretty much every Linux distro and in Homebrew for Mac.  Failing that you can download and install it manually from here: https://go.dev/dl/
+
+Once you have Go installed, you'll need to either clone this repository:
+
+```sh
+git clone git@github.com:tealeg/csv2xlsx.git 
+```
+... or download and extract a Zipped snapshot from the green "Code" button above.
+
+From within the resulting `csv2xlsx` directory issue the following command to build the project:
+
+```sh
+go build -v .
+```
+
+If all goes well you shuould find the compiled binary `csv2xlsx` has been created.
+
+** Invocation
+
+To run `csv2xlsx` you must provide it with at least two parameters: an input file *<f>* and an output file *<o>*.  For example:
+
+```sh
+./csv2xlsx -f=MyData.csv -o=MyData.xslx
+```
+
+If your input file uses a delimiter other than a comma (`,`) then you must provide that as a third paramater, thus:
+
+```sh
+./csv2xlsx -f=MyData.csv -o=MyData.xslx -d=";"
+```
+
 
 ** Alternatives
 If you're looking for a more useful csv2xlsx convertor checkout out.. :
